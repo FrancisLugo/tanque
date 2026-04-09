@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- <script src="index.js"></script> -->
+    <script>
+      let diameter = 1.54; // meters
+      let length = 2.73; // meters
+      let wallThickness = 4; // millimeters
+
+      let effectiveRadius = diameter / 2 - wallThickness / 1000;
+      let effectiveLength = length - 2 * (wallThickness / 1000);
+
+      let volumeInLiters =
+        Math.PI * Math.pow(effectiveRadius, 2) * effectiveLength * 1000;
+      // Convert cubic meters to liters
+
+      // show information about the tank in index.html. Style it with CSS to make it look nice.
+      // You can use a simple layout with a heading and paragraphs for each piece of information.
+      const tankInfo = document.createElement("div");
+      tankInfo.innerHTML = `
+  <h1>Información del Tanque</h1> 
+  <p><strong>Diámetro:</strong> ${diameter} metros</p>
+  <p><strong>Longitud:</strong> ${length} metros</p>
+  <p><strong>Grosor de la Pared:</strong> ${wallThickness} millimetros</p>  
+  <p><strong>Volumen Efectivo:</strong> ${Math.round(volumeInLiters)} litros</p>
+`;
+      document.body.appendChild(tankInfo);
+
+      // create an input for the level of the liquid in the tank.
+      // With that level, calculate the volume of liquid in the tank
+      // and show it in the page.
+      // The level should be a measure in centimeters, and goes from 0 centimeters (12 centimeters above the bottom of the tank) to 154 (12 centimeters below the top of the tank).
+      // and 129 centimeters (12 centimeters below the top of the tank).
+      // Include a button to calculate the volume of liquid in the tank based on the input level. When the button is clicked, it should update the displayed volume of liquid in the tank.
+
+      const input = document.createElement("input");
+      input.type = "number";
+      input.placeholder = "Nivel del líquido (cm)";
+      input.min = 0;
+      input.max = 154;
+      input.style.marginTop = "20px";
+      input.style.width = "178px";
+      tankInfo.appendChild(input);
+      tankInfo.appendChild(document.createElement("br"));
+
+      const button = document.createElement("button");
+      button.textContent = "Calcular Volumen de Líquido";
+      button.style.marginTop = "10px";
+      tankInfo.appendChild(button);
+
+      const liquidVolume = document.createElement("p");
+      liquidVolume.style.marginTop = "20px";
+      tankInfo.appendChild(liquidVolume);
+
+      button.addEventListener("click", () => {
+        const level = parseFloat(input.value);
+        if (isNaN(level) || level < 0 || level > 129) {
+          liquidVolume.textContent =
+            "Por favor, ingresa un nivel válido entre 0 y 129 cm.";
+          return;
+        }
+        const liquidHeight = (level + 12) / 100; // Convert cm to meters
+        const coveredAreaByLiquid =
+          Math.pow(effectiveRadius, 2) *
+            Math.acos((effectiveRadius - liquidHeight) / effectiveRadius) -
+          (effectiveRadius - liquidHeight) *
+            Math.sqrt(
+              2 * effectiveRadius * liquidHeight - Math.pow(liquidHeight, 2),
+            );
+        const liquidVolumeInLiters = Math.round(
+          coveredAreaByLiquid * effectiveLength * 1000,
+        ); // Convert cubic meters to liters
+        liquidVolume.textContent = `${liquidVolumeInLiters} litros`;
+      });
+
+      // You can also add some basic CSS to style the information. For example:
+      const style = document.createElement("style");
+      style.textContent = ` 
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;  
+  }
+  div {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  h1 {
+    color: #333;
+  } 
+  p {
+    color: #555;
+    font-size: 18px;
+  }
+`;
+      document.head.appendChild(style);
+    </script>
+  </body>
+</html>
